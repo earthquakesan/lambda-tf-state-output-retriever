@@ -1,0 +1,24 @@
+name: 'Environment Setup'
+description: 'Setting Up Environment'
+inputs:
+  env:
+    description: 'Execution environment'
+    required: true
+    default: 'dev'
+  bucket_key:
+    description: 'TF state bucket key'
+    required: true
+    default: 'dev'
+runs:
+  using: "composite"
+  steps:
+    - run: echo "ENV=${{ inputs.env }}" >> .env
+      shell: bash
+    - run: echo "BUCKET_KEY=${{ inputs.bucket_key }}" >> .env
+      shell: bash
+    - run: echo "TFSTATE_BUCKET=${TFSTATE_BUCKET}" >> .env
+      shell: bash
+    - run: echo "AWS_REGION=${AWS_REGION}" >> .env
+      shell: bash
+    - run: cat .env
+      shell: bash

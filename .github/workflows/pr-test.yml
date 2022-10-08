@@ -5,9 +5,6 @@ on:
   pull_request:
     branches:
       - main
-  push:
-    branches:
-      - feature/*
 
 env:
   TFSTATE_BUCKET: lambda-tfstate-output-retriever-tfstate
@@ -20,14 +17,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: ./.github/workflows/environment-setup.yml
+      - run: echo "GIT_BRANCH_NAME=$(echo $GITHUB_HEAD_REF | tr '/' '-')" >> $GITHUB_ENV
+      - uses: ./.github/actions/environment-setup
+        with:
+          env: dev
+          bucket_key: ${GIT_BRANCH_NAME}
       - run: make apply
   test:
     needs: setup
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: ./.github/workflows/environment-setup.yml
+      - run: echo "GIT_BRANCH_NAME=$(echo $GITHUB_HEAD_REF | tr '/' '-')" >> $GITHUB_ENV
+      - uses: ./.github/actions/environment-setup
+        with:
+          env: dev
+          bucket_key: ${GIT_BRANCH_NAME}
       - run: pip install -r requirements.txt
       - run: pip install -r requirements-dev.txt
       - run: make test
@@ -36,5 +41,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: ./.github/workflows/environment-setup.yml
+      - run: echo "GIT_BRANCH_NAME=$(echo $GITHUB_HEAD_REF | tr '/' '-')" >> $GITHUB_ENV
+      - uses: ./.github/actions/environment-setup
+        with:
+          env: dev
+          bucket_key: ${GIT_BRANCH_NAME}
       - run: make destroy
