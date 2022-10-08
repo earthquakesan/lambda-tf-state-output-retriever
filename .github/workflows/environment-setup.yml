@@ -1,0 +1,21 @@
+name: environment-setup
+run-name: Setting Up Environment For a jobs
+
+on:
+  workflow_call:
+    inputs:
+      env:
+        required: true
+        type: string
+
+jobs:
+  setup-env:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set env.GIT_BRANCH_NAME
+        run: echo "GIT_BRANCH_NAME=$(echo $GITHUB_HEAD_REF | tr '/' '-')" >> $GITHUB_ENV
+      - run: echo "BUCKET_KEY=${GIT_BRANCH_NAME}" >> .env
+      - run: echo "ENV=${{ inputs.env }}" >> .env
+      - run: echo "TFSTATE_BUCKET=${TFSTATE_BUCKET}" >> .env
+      - run: echo "AWS_REGION=${AWS_REGION}" >> .env
+      - run: cat .env
